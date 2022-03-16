@@ -1,0 +1,18 @@
+###########################################################################################
+FROM docker.io/archlinux:latest as base
+
+COPY copy/. /
+
+ARG USER_NAME
+
+RUN pacman --noconfirm -Syyu && \
+    pacman -S --noconfirm -q --needed \
+      deno \
+      fish && \
+    USER_NAME=$USER_NAME /setup-image/init.fish
+
+USER $USER_NAME
+WORKDIR /home/$USER_NAME
+
+ENTRYPOINT ["/usr/local/bin/tini", "--"]
+CMD ["/bin/fish"]
